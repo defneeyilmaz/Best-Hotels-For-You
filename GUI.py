@@ -2,16 +2,18 @@ from tkinter import *
 import customtkinter
 
 
-class GUI:
+class GUI(customtkinter.CTk):
     def __init__(self):
-        self.root = customtkinter.CTk()
-        self.root.geometry("500x500")
-        self.root.title("Best Hotels For You")
+        super().__init__()
+
+        self.geometry("500x500")
+        self.title("Best Hotels For You")
         customtkinter.set_appearance_mode("light")
 
     def button(self, name, relx, rely):
-        button_ = customtkinter.CTkButton(master=self.root, text=name)
-        button_.place(relx=relx, rely=rely, anchor=CENTER)
+        button = customtkinter.CTkButton(master=self, text=name)
+
+        button.place(relx=relx, rely=rely, anchor=CENTER)
 
     def loop(self):
-        self.root.mainloop()
+        self.mainloop()
