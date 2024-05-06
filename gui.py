@@ -1,5 +1,6 @@
 from tkinter import *
 import customtkinter
+from tkcalendar import Calendar
 
 
 class GUI(customtkinter.CTk):
@@ -35,6 +36,9 @@ class GUI(customtkinter.CTk):
                                              text_color="#DF3C5F", button_color="#4E4E4E", dropdown_fg_color="#224193",
                                              dropdown_text_color="#DF3C5F", button_hover_color="#000000")
         dropdown.place(relx=relx, rely=rely, anchor=CENTER)
+
+    def calendar(self, relx, rely, values):
+        calendar = Calendar(master=self, font=("Helvetica", 20), selectmode='day',)
 
     def loop(self):
         self.mainloop()
