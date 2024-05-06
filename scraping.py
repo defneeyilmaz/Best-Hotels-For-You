@@ -18,9 +18,22 @@ for hotel in hotels:
     # Extract the hotel name
     name_element = hotel.find('div', {'data-testid': 'title'})
     name = name_element.text.strip()
+    address_element = hotel.find('span', {'data-testid': 'address'})
+    address = address_element.text.strip()
+    distanceToCityCenter_element = hotel.find('span', {'data-testid': 'distance'})
+    distanceToCityCenter = distanceToCityCenter_element.text.strip()
+    reviewScore_element = hotel.find('div', {'class': 'a3b8729ab1 d86cee9b25'})
+    reviewScoreList = reviewScore_element.text.strip().split(" ")
+    reviewScore = reviewScoreList[1]
+    #price_element = hotel.find('span', {'class': 'f6431b446c fbfd7c1165 e84eb96b1f'})
+    #price = price_element.text.strip()
     # Append hotels_data with info about hotel
     hotels_data.append({
-        'name': name
+        'name': name,
+        'address': address,
+        'distanceToCityCenter': distanceToCityCenter,
+        'reviewScore': reviewScore,
+        # 'price': price,
     })
 hotels = pd.DataFrame(hotels_data)
 hotels.head()
