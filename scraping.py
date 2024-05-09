@@ -16,7 +16,7 @@ def get_live_euro(header):
     soup_ = BeautifulSoup(response_.text, 'html.parser')
     scrap = soup_.find('div', {'class': 'YMlKec fxKbKc'})
     euro = scrap.text.strip()
-    return euro
+    return float(euro)
 
 
 cityName = "Rome"
@@ -49,9 +49,14 @@ for hotel in hotels[:10]:
     review = reviewScoreList[0]
 
     price_element = hotel.find('span', {'class': 'f6431b446c fbfd7c1165 e84eb96b1f'})
-    price = check_element(price_element)
-    price = price.replace(" "," ")
-    price = price.replace("€", "EUR")
+    euroPrice = check_element(price_element)
+    euroPrice = euroPrice.replace(" "," ")
+    euroPrice = euroPrice.replace("€", "EUR")
+    euroPrice = euroPrice.replace(",", "")
+    amount = euroPrice.split(" ")
+    amount[1] = amount[1].replace(",", ".")
+    priceInTl = str(round(float(amount[1]) * get_live_euro(headers), 2))
+    tlPrice = "TL " + priceInTl
 
     # Append hotels_data with info about hotel
     hotels_data.append({
@@ -59,7 +64,8 @@ for hotel in hotels[:10]:
         'address': address,
         'distanceToCityCenter': distanceToCityCenter,
         'reviewScore': review,
-        'price': price,
+        'priceInEuro': euroPrice,
+        'priceInTl': tlPrice,
     })
 hotels = pd.DataFrame(hotels_data)
 hotels.head()
