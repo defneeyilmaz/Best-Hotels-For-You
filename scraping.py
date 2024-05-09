@@ -2,6 +2,14 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
+
+def check_element(element):
+    if element is not None:
+        return element.text.strip()
+    else:
+        return "Not given"
+
+
 cityName = "Rome"
 checkInDate = "2024-06-20"
 checkOutDate = "2024-06-26"
@@ -17,21 +25,24 @@ hotels_data = []
 for hotel in hotels:
     # Extract the hotel name
     name_element = hotel.find('div', {'data-testid': 'title'})
-    name = name_element.text.strip()
+    name = check_element(name_element)
+
     address_element = hotel.find('span', {'data-testid': 'address'})
-    address = address_element.text.strip()
+    address = check_element(address_element)
+
     distanceToCityCenter_element = hotel.find('span', {'data-testid': 'distance'})
-    distanceToCityCenter = distanceToCityCenter_element.text.strip()
+    distanceToCityCenter = check_element(distanceToCityCenter_element)
+
     reviewScore_element = hotel.find('span', {'class': 'a3332d346a'})
-    if reviewScore_element is not None:
-        reviewScoreList = reviewScore_element.text.strip().split("'")
-        review = reviewScoreList[0]
-    else:
-        review = "Not given"
+    reviewScore = check_element(reviewScore_element)
+    reviewScoreList = reviewScore.split("'")
+    review = reviewScoreList[0]
+
     price_element = hotel.find('span', {'class': 'f6431b446c fbfd7c1165 e84eb96b1f'})
-    price = price_element.text.strip()
-    price = price.replace(" ", " ")
+    price = check_element(price_element)
+    price = price.replace(" "," ")
     price = price.replace("€", "EUR")
+
     # Append hotels_data with info about hotel
     hotels_data.append({
         'name': name,
