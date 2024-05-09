@@ -2,10 +2,10 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
-#cityName = selected city name
-#checkInDate = selected check in date
-#checkOutDate = selected check out date
-url = f'https://www.booking.com/searchresults.html?ss={cityName}&ssne={cityName}&ssne_untouched={cityName}&efdco=1&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=index&dest_id=-126693&dest_type=city&checkin={checkInDate}&checkout={chackOutDate}&group_adults=2&no_rooms=1&group_children=0'
+cityName = "Rome"
+checkInDate = "2024-06-20"
+checkOutDate = "2024-06-26"
+url = f'https://www.booking.com/searchresults.html?ss={cityName}&ssne={cityName}&ssne_untouched={cityName}&efdco=1&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=index&dest_id=-126693&dest_type=city&checkin={checkInDate}&checkout={checkOutDate}&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR'
 headers = {
     'User-Agent': 'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, likeGecko) Chrome/51.0.2704.64 Safari/537.36',
     'Accept-Language': 'en-US, en;q=0.5'}
@@ -22,19 +22,24 @@ for hotel in hotels:
     address = address_element.text.strip()
     distanceToCityCenter_element = hotel.find('span', {'data-testid': 'distance'})
     distanceToCityCenter = distanceToCityCenter_element.text.strip()
-    reviewScore_element = hotel.find('div', {'class': 'a3b8729ab1 d86cee9b25'})
-    reviewScoreList = reviewScore_element.text.strip().split(" ")
-    reviewScore = reviewScoreList[1]
-    #price_element = hotel.find('span', {'class': 'f6431b446c fbfd7c1165 e84eb96b1f'})
-    #price = price_element.text.strip()
+    reviewScore_element = hotel.find('span', {'class': 'a3332d346a'})
+    if reviewScore_element is not None:
+        reviewScoreList = reviewScore_element.text.strip().split("'")
+        review = reviewScoreList[0]
+    else:
+        review = "Not given"
+    price_element = hotel.find('span', {'class': 'f6431b446c fbfd7c1165 e84eb96b1f'})
+    price = price_element.text.strip()
+    price = price.replace(" ", " ")
+    price = price.replace("€", "EUR")
     # Append hotels_data with info about hotel
     hotels_data.append({
         'name': name,
         'address': address,
         'distanceToCityCenter': distanceToCityCenter,
-        'reviewScore': reviewScore,
-        # 'price': price,
+        'reviewScore': review,
+        'price': price,
     })
 hotels = pd.DataFrame(hotels_data)
 hotels.head()
-hotels.to_csv('test_hotels2.csv', header=True, index=False)
+hotels.to_csv('test_hotels.csv', header=True, index=False)
