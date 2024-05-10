@@ -23,10 +23,10 @@ class GUI(customtkinter.CTk):
                                        "Vienna", "Amsterdam"], self.dropdown_var)
         self.label("City:", 0.17, 0.15, 20)
         self.checkin_date = StringVar()
-        self.checkin_calendar(0.38, 0.15, 12, self.checkin_date)
+        self.calendar(0.38, 0.15, 12, self.checkin_date)
         self.label("Check-in Date:", 0.31, 0.15, 20)
         self.checkout_date = StringVar()
-        self.checkout_calendar(0.54, 0.15, 12, self.checkout_date)
+        self.calendar(0.54, 0.15, 12, self.checkout_date)
         self.label("Check-out Date:", 0.466, 0.15, 20)
         self.radio_var = IntVar()
         self.radio_button(0.67, 0.15, "Euro", 20, 0, self.radio_var)
@@ -40,8 +40,7 @@ class GUI(customtkinter.CTk):
         selected_checkin_date = f'{self.checkin_date.get()}'
         selected_checkout_date = f'{self.checkout_date.get()}'
         selected_currency = self.radio_event()
-        # print(str(self.dropdown_var.get()), str(self.checkin_date.get()), str(self.checkout_date.get()),
-        # self.radio_event())
+        print(str(self.dropdown_var.get()), str(self.checkin_date.get()), str(self.checkout_date.get()), self.radio_event())
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -68,27 +67,18 @@ class GUI(customtkinter.CTk):
         dropdown.current(0)
         dropdown.config(state="readonly")
 
-    def checkin_calendar(self, relx, rely, fontsize, variable):
-        def get_date():
-            self.checkin_date.set(calendar.entry_kw)
+    def calendar(self, relx, rely, fontsize, variable):
         today = datetime.date.today()
         calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day,
                              background='#CADCFC', foreground='#00246B', borderwidth=8, relief=FLAT,
-                             font=("Helvetica", fontsize), textvariable=variable)
+                             font=("Helvetica", fontsize), textvariable=variable, mindate=today)
         calendar.place(relx=relx, rely=rely, anchor=CENTER)
         calendar.config(state="readonly")
-        calendar.bind("<<DateEntrySelectedDate>>", str(get_date))
-
-    def checkout_calendar(self, relx, rely, fontsize, variable):
-        def get_date():
-            self.checkout_date.set(calendar.entry_kw)
-        today = datetime.date.today()
-        calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day,
-                             background='#CADCFC', foreground='#00246B', borderwidth=8, relief=FLAT,
-                             font=("Helvetica", fontsize,), textvariable=variable)
-        calendar.place(relx=relx, rely=rely, anchor=CENTER)
-        calendar.config(state="readonly")
-        calendar.bind("<<DateEntrySelectedDate>>", str(get_date))
+        if calendar.bind("<Enter>"):
+            if variable == self.checkin_date:
+                self.checkin_date.set(calendar.entry_kw)
+            else:
+                self.checkout_date.set(calendar.entry_kw)
 
     def radio_event(self):
         return f"{self.radio_var.get()}"  # chosen currency
