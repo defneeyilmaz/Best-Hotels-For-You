@@ -16,22 +16,32 @@ class GUI(customtkinter.CTk):
         self.my_frame.grid(row=0, column=0, padx=200, pady=180, sticky="nsew")
         self.title("Best Hotels For You")
         self.set_title("Best Hotels For You!", 0.5, 0.05, 40)
-        self.dropdown(0.25, 0.15, 12, ["Barcelona", "Rome", "Budapest", "Paris", "Berlin",
-                                       "London", "Stockholm", "Prague", "Salzburg", "Munich",
-                                       "Porto", "Florence", "Bruges", "Vienna", "Amsterdam"])
-        self.label("City:", 0.2, 0.15, 20)
-        self.calendar(0.4, 0.15, 12)
-        self.label("Check-in Date:", 0.33, 0.15, 20)
-        self.calendar(0.56, 0.15, 12)
-        self.label("Check-out Date:", 0.49, 0.15, 20)
+        self.dropdown_var = StringVar()
+        self.dropdown(0.22, 0.15, 12, ["Barcelona", "Rome", "Budapest",
+                                       "Paris", "Berlin", "London", "Stockholm", "Prague",
+                                       "Salzburg", "Munich", "Porto", "Florence", "Bruges",
+                                       "Vienna", "Amsterdam"], self.dropdown_var)
+        self.label("City:", 0.17, 0.15, 20)
+        self.calendar_var = tkinter.StringVar
+        self.calendar(0.38, 0.15, 12)
+        self.label("Check-in Date:", 0.31, 0.15, 20)
+        self.calendar(0.54, 0.15, 12)
+        self.label("Check-out Date:", 0.466, 0.15, 20)
         self.radio_var = IntVar()
-        self.radio_button(0.7, 0.15, "Euro", 20, 0, self.radio_var)
-        self.radio_button(0.76, 0.15, "Turkish Lira", 20, 1, self.radio_var)
-        self.label("Currency:", 0.64, 0.15, 20)
+        self.radio_button(0.67, 0.15, "Euro", 20, 0, self.radio_var)
+        self.radio_button(0.717, 0.15, "Turkish Lira", 20, 1, self.radio_var)
+        self.label("Currency:", 0.617, 0.15, 20)
+        self.button("Search", 0.8, 0.15, 20)
         customtkinter.set_appearance_mode("light")
 
-    def button(self, name, relx, rely):
-        button = customtkinter.CTkButton(master=self, text=name)
+    def search(self):
+        selected_city = f'{self.dropdown_var.get()}'
+        selected_currency = self.radio_event()
+        print(str(self.dropdown_var.get()), self.radio_event())
+
+    def button(self, name, relx, rely, fontsize):
+        button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
+                                         text_color="#CADCFC", fg_color="#00246B", corner_radius=8)
         button.place(relx=relx, rely=rely, anchor=CENTER)
 
     def set_title(self, name, relx, rely, fontsize):
@@ -41,26 +51,33 @@ class GUI(customtkinter.CTk):
 
     def label(self, name, relx, rely, fontsize):
         label = customtkinter.CTkLabel(master=self, text=name, font=('Helvetica', fontsize), text_color="#00246B",
-                                       corner_radius=8)
+                                       corner_radius=8, fg_color="#CADCFC")
         label.place(relx=relx, rely=rely, anchor=CENTER)
 
-    def dropdown(self, relx, rely, fontsize, values):
-        n = tkinter.StringVar()
-        dropdown = tkinter.ttk.Combobox(self, textvariable=n, values=values, font=("Helvetica", fontsize), width=12,
-                                        background="#CADCFC")
+    def dropdown_event(self):
+        return self.dropdown_var.get()  # chosen city
+
+    def dropdown(self, relx, rely, fontsize, values, variable):
+        dropdown = tkinter.ttk.Combobox(self, textvariable=variable, values=values, font=("Helvetica", fontsize),
+                                        width=12, background="#CADCFC")
         dropdown.place(relx=relx, rely=rely, anchor=CENTER)
+        dropdown.current(0)
         dropdown.config(state="readonly")
 
+    def calendar_event(self):
+        return self.calendar_var.get()  # chosen date
+
     def calendar(self, relx, rely, fontsize):
+        calendar_var = tkinter.StringVar()
         today = datetime.date.today()
-        calendar = DateEntry(master=self, width=8, year=today.year, month=today.month, day=today.day,
+        calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day,
                              background='#CADCFC', foreground='#00246B', borderwidth=8, relief=FLAT,
-                             font=("Helvetica", fontsize))
+                             font=("Helvetica", fontsize), textvariable=calendar_var, command=self.calendar_event)
         calendar.place(relx=relx, rely=rely, anchor=CENTER)
         calendar.config(state="readonly")
 
     def radio_event(self):
-        choosen_price = f"{self.radio_var.get()}"
+        return f"{self.radio_var.get()}"  # chosen currency
 
     def radio_button(self, relx, rely, name, fontsize, value, variable):
         radio_var = customtkinter.IntVar(value=value)
