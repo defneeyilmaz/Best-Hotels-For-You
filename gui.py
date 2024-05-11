@@ -3,6 +3,7 @@ from tkinter import *
 import customtkinter
 from tkcalendar import DateEntry
 import datetime
+from CTkTable import *
 
 
 class GUI(customtkinter.CTk):
@@ -12,10 +13,10 @@ class GUI(customtkinter.CTk):
         self.geometry("500x500")
         self.grid_rowconfigure(0, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
-        self.my_frame = customtkinter.CTkFrame(master=self)
-        self.my_frame.grid(row=0, column=0, padx=200, pady=180, sticky="nsew")
+        self.my_frame = customtkinter.CTkFrame(master=self, fg_color="#00246B")
+        self.my_frame.grid(row=0, column=0, padx=220, pady=200, sticky="nsew")
         self.title("Best Hotels For You")
-        self.set_title("Best Hotels For You!", 0.5, 0.05, 40)
+        self.set_title("Best Hotels For You!", 0.5, 0.07, 40)
         self.dropdown_var = StringVar()
         self.dropdown(0.22, 0.15, 12, ["Barcelona", "Rome", "Budapest",
                                        "Paris", "Berlin", "London", "Stockholm", "Prague",
@@ -31,8 +32,9 @@ class GUI(customtkinter.CTk):
         self.radio_var = IntVar()
         self.radio_button(0.67, 0.15, "Euro", 20, 0, self.radio_var)
         self.radio_button(0.717, 0.15, "Turkish Lira", 20, 1, self.radio_var)
-        self.label("Currency:", 0.617, 0.15, 20)
+        self.label("Currency:", 0.616, 0.15, 20)
         self.button("Search", 0.8, 0.15, 20)
+        self.table(240, 220, 20)
         customtkinter.set_appearance_mode("light")
 
     def search(self):
@@ -40,7 +42,8 @@ class GUI(customtkinter.CTk):
         selected_checkin_date = f'{self.checkin_date.get()}'
         selected_checkout_date = f'{self.checkout_date.get()}'
         selected_currency = self.radio_event()
-        print(str(self.dropdown_var.get()), str(self.checkin_date.get()), str(self.checkout_date.get()), self.radio_event())
+        print(str(self.dropdown_var.get()), str(self.checkin_date.get()), str(self.checkout_date.get()),
+              self.radio_event())
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -70,7 +73,7 @@ class GUI(customtkinter.CTk):
     def calendar(self, relx, rely, fontsize, variable):
         today = datetime.date.today()
         calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day,
-                             background='#CADCFC', foreground='#00246B', borderwidth=8, relief=FLAT,
+                             background="#CADCFC", foreground="#00246B", borderwidth=8, relief=FLAT,
                              font=("Helvetica", fontsize), textvariable=variable, mindate=today)
         calendar.place(relx=relx, rely=rely, anchor=CENTER)
         calendar.config(state="readonly")
@@ -89,6 +92,14 @@ class GUI(customtkinter.CTk):
                                                     font=("Helvetica", fontsize), command=self.radio_event,
                                                     text_color="#00246B", text=name)
         radio_button.place(relx=relx, rely=rely, anchor=CENTER)
+
+    def table(self, relx, rely, fontsize):
+        value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], ["", "", "", "", ""],
+                 ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""]]
+        table = CTkTable(master=self, font=("Helvetica", fontsize), text_color="#00246B", values=value,
+                         border_width=0, header_color="#CADCFC", anchor="c", height=90, width=280,
+                         justify="center", bg_color="#00246B", row=6, column=5, state="readonly")
+        table.grid(row=0, column=0, padx=relx, pady=rely)
 
     def loop(self):
         self.mainloop()
