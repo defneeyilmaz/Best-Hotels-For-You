@@ -6,6 +6,20 @@ import datetime
 from CTkTable import *
 
 
+def format_date(date):
+    values = date.split("/")
+    formatted_date = "20" + values[2] + "-"
+    if len(values[0]) == 1:
+        formatted_date += "0" + values[0] + "-"
+    else:
+        formatted_date += values[0]
+    if len(values[1]) == 1:
+        formatted_date += "0" + values[1]
+    else:
+        formatted_date += values[1]
+    return formatted_date
+
+
 class GUI(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -35,6 +49,7 @@ class GUI(customtkinter.CTk):
         self.label("Currency:", 0.616, 0.15, 20)
         self.button("Search", 0.8, 0.15, 20)
         self.table(240, 220, 20)
+
         customtkinter.set_appearance_mode("light")
 
     def search(self):
@@ -42,8 +57,8 @@ class GUI(customtkinter.CTk):
         selected_checkin_date = f'{self.checkin_date.get()}'
         selected_checkout_date = f'{self.checkout_date.get()}'
         selected_currency = self.radio_event()
-        print(str(self.dropdown_var.get()), str(self.checkin_date.get()), str(self.checkout_date.get()),
-              self.radio_event())
+        print(str(self.dropdown_var.get()), format_date(str(self.checkin_date.get())),
+              format_date(str(self.checkout_date.get())), self.radio_event())
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -72,9 +87,10 @@ class GUI(customtkinter.CTk):
 
     def calendar(self, relx, rely, fontsize, variable):
         today = datetime.date.today()
-        calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day,
-                             background="#CADCFC", foreground="#00246B", borderwidth=8, relief=FLAT,
-                             font=("Helvetica", fontsize), textvariable=variable, mindate=today)
+        calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day, relief=FLAT,
+                             background="#CADCFC", foreground="#00246B", borderwidth=8, textvariable=variable,
+                             font=("Helvetica", fontsize), mindate=today, date_format="%Y-%m-%d")
+        # date_patern='yyyy-mm-dd'
         calendar.place(relx=relx, rely=rely, anchor=CENTER)
         calendar.config(state="readonly")
         if calendar.bind("<Enter>"):
