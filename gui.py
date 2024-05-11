@@ -1,9 +1,12 @@
+import csv
 import tkinter.ttk
 from tkinter import *
 import customtkinter
 from tkcalendar import DateEntry
 import datetime
 from CTkTable import *
+from scraping import *
+import csv
 
 
 def format_date(date):
@@ -53,12 +56,12 @@ class GUI(customtkinter.CTk):
         customtkinter.set_appearance_mode("light")
 
     def search(self):
-        selected_city = f'{self.dropdown_var.get()}'
-        selected_checkin_date = f'{self.checkin_date.get()}'
-        selected_checkout_date = f'{self.checkout_date.get()}'
+        selected_city = str(self.dropdown_var.get())
+        selected_checkin_date = format_date(str(self.checkin_date.get()))
+        selected_checkout_date = format_date(str(self.checkout_date.get()))
         selected_currency = self.radio_event()
-        print(str(self.dropdown_var.get()), format_date(str(self.checkin_date.get())),
-              format_date(str(self.checkout_date.get())), self.radio_event())
+        scrape(selected_city, selected_checkin_date, selected_checkout_date)
+        self.file_reading()
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -90,7 +93,6 @@ class GUI(customtkinter.CTk):
         calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day, relief=FLAT,
                              background="#CADCFC", foreground="#00246B", borderwidth=8, textvariable=variable,
                              font=("Helvetica", fontsize), mindate=today, date_format="%Y-%m-%d")
-        # date_patern='yyyy-mm-dd'
         calendar.place(relx=relx, rely=rely, anchor=CENTER)
         calendar.config(state="readonly")
         if calendar.bind("<Enter>"):
@@ -116,6 +118,16 @@ class GUI(customtkinter.CTk):
                          border_width=0, header_color="#CADCFC", anchor="c", height=90, width=280,
                          justify="center", bg_color="#00246B", row=6, column=5, state="readonly")
         table.grid(row=0, column=0, padx=relx, pady=rely)
+
+    def file_reading(self):
+        hotelsfile = open("test_hotels.csv")
+        type(hotelsfile)
+        filereader = csv.reader(hotelsfile)
+        infos = []
+        for row in filereader:
+            infos.append(row)
+        hotelsfile.close()
+        print(infos)
 
     def loop(self):
         self.mainloop()
