@@ -28,7 +28,7 @@ class GUI(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("500x500")
+        self.geometry("1920x1080")
         self.grid_rowconfigure(0, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
         self.my_frame = customtkinter.CTkFrame(master=self, fg_color="#00246B")
@@ -60,12 +60,12 @@ class GUI(customtkinter.CTk):
         selected_city = str(self.dropdown_var.get())
         selected_checkin_date = format_date(str(self.checkin_date.get()))
         selected_checkout_date = format_date(str(self.checkout_date.get()))
-        selected_currency = self.radio_event()
+        selected_currency = int(self.radio_event())
         if selected_checkin_date >= selected_checkout_date:
             self.popup_message("Invalid date entered.")
         else:
             scrape(selected_city, selected_checkin_date, selected_checkout_date)
-            self.update_table(self.file_reading(), self.table)
+            self.update_table(self.file_reading(), self.table, selected_currency)
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -138,13 +138,23 @@ class GUI(customtkinter.CTk):
         hotelsfile.close()
         return infos
 
+    def update_table(self, hotels, table, currency):
+        def remove_element(lst):
+            for sub in lst:
+                del sub[-2]
+            return lst
 
-    def update_table(self, hotels, table):
-        value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels[1], hotels[2],
-                 hotels[3], hotels[4], hotels[5]]
+        if currency == 1:
+            hotels_top5 = remove_element(hotels[1:6])
+            print(hotels_top5)
+            value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels_top5[0],
+                     hotels_top5[1], hotels_top5[2], hotels_top5[3], hotels_top5[4]]
+        else:
+            value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels[1], hotels[2],
+                     hotels[3], hotels[4], hotels[5]]
         table.update_values(values=value)
         for x in range(1, 6):
-            table.edit_row(row=x, font=("Helvetica", 17, "bold"))
+            table.edit_row(row=x, font=("Helvetica", 16, "bold"))
 
     def loop(self):
         self.mainloop()
