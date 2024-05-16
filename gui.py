@@ -4,6 +4,7 @@ from tkinter import *
 import customtkinter
 from tkcalendar import DateEntry
 import datetime
+from CTkMessagebox import CTkMessagebox
 from CTkTable import *
 from scraping import *
 import csv
@@ -56,13 +57,15 @@ class GUI(customtkinter.CTk):
         customtkinter.set_appearance_mode("light")
 
     def search(self):
-        self.table = self.table(220, 200, 20)
         selected_city = str(self.dropdown_var.get())
         selected_checkin_date = format_date(str(self.checkin_date.get()))
         selected_checkout_date = format_date(str(self.checkout_date.get()))
         selected_currency = self.radio_event()
-        scrape(selected_city, selected_checkin_date, selected_checkout_date)
-        self.update_table(self.file_reading(), self.table)
+        if selected_checkin_date >= selected_checkout_date:
+            self.popup_message("Invalid date entered.")
+        else:
+            scrape(selected_city, selected_checkin_date, selected_checkout_date)
+            self.update_table(self.file_reading(), self.table)
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -112,6 +115,10 @@ class GUI(customtkinter.CTk):
                                                     text_color="#00246B", text=name)
         radio_button.place(relx=relx, rely=rely, anchor=CENTER)
 
+    def popup_message(self, message):
+        popup = CTkMessagebox(master=self, message=message, title="Error", border_color="#00246B",
+                              font=("Helvetica", 18), border_width=4)
+
     def table(self, relx, rely, fontsize):
         value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], ["", "", "", "", ""],
                  ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""]]
@@ -131,12 +138,13 @@ class GUI(customtkinter.CTk):
         hotelsfile.close()
         return infos
 
+
     def update_table(self, hotels, table):
         value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels[1], hotels[2],
                  hotels[3], hotels[4], hotels[5]]
         table.update_values(values=value)
         for x in range(1, 6):
-            table.edit_row(row=x, font=("Helvetica", 18))
+            table.edit_row(row=x, font=("Helvetica", 17, "bold"))
 
     def loop(self):
         self.mainloop()
