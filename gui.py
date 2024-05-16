@@ -31,7 +31,7 @@ class GUI(customtkinter.CTk):
         self.grid_rowconfigure(0, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
         self.my_frame = customtkinter.CTkFrame(master=self, fg_color="#00246B")
-        self.my_frame.grid(row=0, column=0, padx=220, pady=200, sticky="nsew")
+        self.my_frame.grid(row=0, column=0, padx=210, pady=200, sticky="nsew")
         self.title("Best Hotels For You")
         self.set_title("Best Hotels For You!", 0.5, 0.07, 40)
         self.dropdown_var = StringVar()
@@ -51,17 +51,18 @@ class GUI(customtkinter.CTk):
         self.radio_button(0.717, 0.15, "Turkish Lira", 20, 1, self.radio_var)
         self.label("Currency:", 0.616, 0.15, 20)
         self.button("Search", 0.8, 0.15, 20)
-        self.table(240, 220, 20)
+        self.table = self.table(240, 220, 20)
 
         customtkinter.set_appearance_mode("light")
 
     def search(self):
+        self.table = self.table(220, 200, 20)
         selected_city = str(self.dropdown_var.get())
         selected_checkin_date = format_date(str(self.checkin_date.get()))
         selected_checkout_date = format_date(str(self.checkout_date.get()))
         selected_currency = self.radio_event()
         scrape(selected_city, selected_checkin_date, selected_checkout_date)
-        self.file_reading()
+        self.update_table(self.file_reading(), self.table)
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -114,10 +115,11 @@ class GUI(customtkinter.CTk):
     def table(self, relx, rely, fontsize):
         value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], ["", "", "", "", ""],
                  ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""]]
-        table = CTkTable(master=self, font=("Helvetica", fontsize), text_color="#00246B", values=value,
+        table = CTkTable(master=self, font=("Helvetica", fontsize, "bold"), text_color="#00246B", values=value,
                          border_width=0, header_color="#CADCFC", anchor="c", height=90, width=280,
                          justify="center", bg_color="#00246B", row=6, column=5, state="readonly")
         table.grid(row=0, column=0, padx=relx, pady=rely)
+        return table
 
     def file_reading(self):
         hotelsfile = open("test_hotels.csv")
@@ -127,7 +129,14 @@ class GUI(customtkinter.CTk):
         for row in filereader:
             infos.append(row)
         hotelsfile.close()
-        print(infos)
+        return infos
+
+    def update_table(self, hotels, table):
+        value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels[1], hotels[2],
+                 hotels[3], hotels[4], hotels[5]]
+        table.update_values(values=value)
+        for x in range(1, 6):
+            table.edit_row(row=x, font=("Helvetica", 18))
 
     def loop(self):
         self.mainloop()
