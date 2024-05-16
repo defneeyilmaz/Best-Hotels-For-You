@@ -64,8 +64,12 @@ class GUI(customtkinter.CTk):
         if selected_checkin_date >= selected_checkout_date:
             self.popup_message("Invalid date entered.")
         else:
-            scrape(selected_city, selected_checkin_date, selected_checkout_date)
-            self.update_table(self.file_reading(), self.table, selected_currency)
+            try:
+                scrape(selected_city, selected_checkin_date, selected_checkout_date)
+            except:
+                self.popup_message("No internet connection.\nPlease try again.")
+            else:
+                self.update_table(self.file_reading(), self.table, selected_currency)
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
