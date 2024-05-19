@@ -1,4 +1,3 @@
-import csv
 import tkinter.ttk
 from tkinter import *
 import customtkinter
@@ -52,7 +51,7 @@ class GUI(customtkinter.CTk):
         self.radio_button(0.717, 0.15, "Turkish Lira", 20, 1, self.radio_var)
         self.label("Currency:", 0.616, 0.15, 20)
         self.button("Search", 0.8, 0.15, 20)
-        self.table = self.table(240, 220, 20)
+        self.table = self.table(240, 220, 16)
 
         customtkinter.set_appearance_mode("light")
 
@@ -66,10 +65,9 @@ class GUI(customtkinter.CTk):
         else:
             try:
                 scrape(selected_city, selected_checkin_date, selected_checkout_date)
+                self.update_table(self.file_reading(), selected_currency)
             except:
                 self.popup_message("No internet connection.\nPlease try again.")
-            else:
-                self.update_table(self.file_reading(), self.table, selected_currency)
 
     def button(self, name, relx, rely, fontsize):
         button = customtkinter.CTkButton(master=self, text=name, font=('Helvetica', fontsize), command=self.search,
@@ -100,7 +98,7 @@ class GUI(customtkinter.CTk):
         today = datetime.date.today()
         calendar = DateEntry(master=self, width=10, year=today.year, month=today.month, day=today.day, relief=FLAT,
                              background="#CADCFC", foreground="#00246B", borderwidth=8, textvariable=variable,
-                             font=("Helvetica", fontsize), mindate=today, date_format="%Y-%m-%d")
+                             font=("Helvetica", fontsize), mindate=today)
         calendar.place(relx=relx, rely=rely, anchor=CENTER)
         calendar.config(state="readonly")
         if calendar.bind("<Enter>"):
@@ -113,7 +111,7 @@ class GUI(customtkinter.CTk):
         return f"{self.radio_var.get()}"  # chosen currency
 
     def radio_button(self, relx, rely, name, fontsize, value, variable):
-        radio_var = customtkinter.IntVar(value=value)
+        customtkinter.IntVar(value=value)
         radio_button = customtkinter.CTkRadioButton(master=self, variable=variable, value=value,
                                                     font=("Helvetica", fontsize), command=self.radio_event,
                                                     text_color="#00246B", text=name)
@@ -124,7 +122,7 @@ class GUI(customtkinter.CTk):
                               font=("Helvetica", 18), border_width=4)
 
     def table(self, relx, rely, fontsize):
-        value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], ["", "", "", "", ""],
+        value = [["Name", "Address", "Distance to City Center", "Rating", "Price"], ["", "", "", "", ""],
                  ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""]]
         table = CTkTable(master=self, font=("Helvetica", fontsize, "bold"), text_color="#00246B", values=value,
                          border_width=0, header_color="#CADCFC", anchor="c", height=90, width=280,
@@ -142,7 +140,7 @@ class GUI(customtkinter.CTk):
         hotelsfile.close()
         return infos
 
-    def update_table(self, hotels, table, currency):
+    def update_table(self, hotels, currency):
         def remove_element(lst):
             for sub in lst:
                 del sub[-2]
@@ -150,15 +148,12 @@ class GUI(customtkinter.CTk):
 
         if currency == 1:
             hotels_top5 = remove_element(hotels[1:6])
-            print(hotels_top5)
-            value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels_top5[0],
+            value = [["Name", "Address", "Distance to City Center", "Rating", "Price"], hotels_top5[0],
                      hotels_top5[1], hotels_top5[2], hotels_top5[3], hotels_top5[4]]
         else:
-            value = [["Name", "Address", "Distance to City Center", "Review Score", "Price"], hotels[1], hotels[2],
+            value = [["Name", "Address", "Distance to City Center", "Rating", "Price"], hotels[1], hotels[2],
                      hotels[3], hotels[4], hotels[5]]
-        table.update_values(values=value)
-        for x in range(1, 6):
-            table.edit_row(row=x, font=("Helvetica", 16, "bold"))
+        self.table.update_values(values=value)
 
     def loop(self):
         self.mainloop()

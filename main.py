@@ -1,1 +1,5 @@
-print("hello")
+from gui import *
+
+gui = GUI()
+
+gui.loop()
